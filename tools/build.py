@@ -1,4 +1,4 @@
-import json, sys, os, copy, shutil
+import json, sys, os, copy, shutil, re
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lib
 from lib import load, el, st, remove, clone, children, link, icon, translate, set_card, find, new_id, walk
@@ -41,6 +41,17 @@ def ready_card(doc, cid, p):
     set_card(doc, cid, name, sub,
              specs=[(rooms, "las la-bed"), (baths, "las la-bath"), (area, "las la-ruler-combined")],
              loc=loc, loc_icon="las la-map-marker", btn=WYCENA, href=L["wycena"])
+
+
+def site_logo(lst, i, h, h_tab, h_mob):
+    """Replace the demo logo image with Elementor Pro "Site Logo" (taken from Appearance > Customize > Site Identity)."""
+    lst[i] = {"id": new_id(), "elType": "widget", "widgetType": "theme-site-logo", "isInner": False, "elements": [],
+              "settings": {"align": "left", "link_to": "custom", "object-fit": "contain",
+                           "height": {"unit": "px", "size": h, "sizes": []},
+                           "height_tablet": {"unit": "px", "size": h_tab, "sizes": []},
+                           "height_mobile": {"unit": "px", "size": h_mob, "sizes": []},
+                           "__dynamic__": {"image": "[elementor-tag id=\"" + new_id() + "\" name=\"site-logo\" settings=\"%7B%7D\"]",
+                                           "link": "[elementor-tag id=\"4f86500\" name=\"site-url\" settings=\"%7B%7D\"]"}}}
 
 
 def card_ids(doc, grid_id):
@@ -485,10 +496,7 @@ d["title"] = "LubuskieDomy – Nagłówek"
 st(d, "51691bf0", title_text=CONTACT_EMAIL, link=link("mailto:" + CONTACT_EMAIL))
 st(d, "77a83ec1", title_text=f"Tel. {PHONE}", link=link(PHONE_HREF), selected_icon=icon("las la-phone"))
 logo, lst, i = find(d, "35d8c4e2")
-lst[i] = {"id": new_id(), "elType": "widget", "widgetType": "heading", "isInner": False, "elements": [],
-          "settings": {"title": "Lubuskie<b>Domy</b>.pl", "header_size": "div",
-                       "__dynamic__": {"link": "[elementor-tag id=\"4f86500\" name=\"site-url\" settings=\"%7B%7D\"]"},
-                       "__globals__": {"typography_typography": "globals/typography?id=d3dae9a", "title_color": "globals/colors?id=secondary"}}}
+site_logo(lst, i, 72, 60, 50)
 btn(d, "2c64fc92", "Darmowa wycena", L["projekty"] + L["wycena"])
 save(d, "lubuskiedomy-naglowek")
 
@@ -496,10 +504,7 @@ save(d, "lubuskiedomy-naglowek")
 d = load("realia-footer")
 d["title"] = "LubuskieDomy – Stopka"
 logo, lst, i = find(d, "6ad666af")
-lst[i] = {"id": new_id(), "elType": "widget", "widgetType": "heading", "isInner": False, "elements": [],
-          "settings": {"title": "Lubuskie<b>Domy</b>.pl", "header_size": "div",
-                       "__dynamic__": {"link": "[elementor-tag id=\"4f86500\" name=\"site-url\" settings=\"%7B%7D\"]"},
-                       "__globals__": {"typography_typography": "globals/typography?id=d3dae9a", "title_color": "globals/colors?id=text"}}}
+site_logo(lst, i, 110, 100, 90)
 s = el(d, "f5e5f3e")["settings"]
 for it, (t, h) in zip(s["icon_list"], [("Oferta", L["oferta"]), ("Projekty", L["projekty"]), ("Technologia budowy", L["tech"]),
                                          ("Realizacje", L["realizacje"]), ("O nas", L["onas"])]):
@@ -537,13 +542,14 @@ save(d, "lubuskiedomy-404")
 d = load("global")
 d["title"] = "Style globalne – LubuskieDomy"
 ps = d["page_settings"]
-SYS = {"secondary": ("Nagłówki", "#1E2B24"), "primary": ("Tekst", "#3A403C"), "text": ("Biały", "#FFFFFF"), "accent": ("Przezroczysty 20%", "#FFFFFF2B")}
+# palette taken from the LubuskieDomy.pl logo: blue #17539B + green #8CAD2A
+SYS = {"secondary": ("Nagłówki", "#0F2440"), "primary": ("Tekst", "#3A4350"), "text": ("Biały", "#FFFFFF"), "accent": ("Przezroczysty 20%", "#FFFFFF2B")}
 for c in ps["system_colors"]:
     c["title"], c["color"] = SYS[c["_id"]]
-CUS = {"d49ac81": ("Przycisk", "#B5651D"), "332724a": ("Przycisk – hover", "#8F4E14"), "4d462f5": ("Linie", "#4A6B57"),
-       "cfa1f76": ("Jasne tło", "#ECE5D8"), "7fbea4f": ("Bardzo jasne tło", "#F7F4EE"), "044b931": ("Ciemne tło", "#1F3A2E"),
-       "638d055": ("Bardzo ciemne tło", "#0E1A14"), "a2c0d56": ("Akcent 1", "#B5651D"), "ec3c7a7": ("Akcent 2", "#3F7A5A"),
-       "1d84241": ("Akcent 3", "#1E2B24"), "262c9c6": ("Akcent 4", "#4A6B57")}
+CUS = {"d49ac81": ("Przycisk (zielony z logo)", "#8CAD2A"), "332724a": ("Przycisk – hover", "#74931C"), "4d462f5": ("Linie (niebieski z logo)", "#17539B"),
+       "cfa1f76": ("Jasne tło", "#E3EBF5"), "7fbea4f": ("Bardzo jasne tło", "#F2F6FA"), "044b931": ("Ciemne tło", "#0F3A6E"),
+       "638d055": ("Bardzo ciemne tło", "#0A1F3A"), "a2c0d56": ("Akcent 1 – zielony", "#8CAD2A"), "ec3c7a7": ("Akcent 2 – niebieski", "#17539B"),
+       "1d84241": ("Akcent 3 – granat", "#0F2440"), "262c9c6": ("Akcent 4 – niebieski", "#17539B")}
 for c in ps["custom_colors"]:
     c["title"], c["color"] = CUS[c["_id"]]
 TYP = {"Primary": "Główna", "Secondary": "Drugorzędna", "Text": "Tekst", "Accent": "Akcent", "Global Font": "Czcionka globalna",
@@ -552,6 +558,17 @@ for t in ps.get("system_typography", []) + ps.get("custom_typography", []):
     t["title"] = TYP.get(t["title"], t["title"])
 with open(f"{OUT}/templates/global.json", "w", encoding="utf-8") as f:
     json.dump(d, f, ensure_ascii=False, indent=4)
+
+# =================================================================== RECOLOR
+# Colours hard-coded in the demo widgets (not linked to globals) -> logo palette. Alpha suffix is kept.
+RECOLOR = {"77BFA3": "8CAD2A", "5E9779": "74931C", "3F6450": "17539B", "E1ECE7": "E3EBF5", "F2F6F4": "F2F6FA",
+           "152D24": "0F3A6E", "080D0A": "0A1F3A", "1F2122": "0F2440", "353738": "3A4350", "FAFCFB": "FAFBFD"}
+_hex = re.compile(r'"#(' + "|".join(RECOLOR) + r')([0-9A-Fa-f]{2})?"', re.I)
+for fn in os.listdir(f"{OUT}/templates"):
+    p = f"{OUT}/templates/{fn}"
+    txt = open(p, encoding="utf-8").read()
+    txt = _hex.sub(lambda mo: '"#' + RECOLOR[mo.group(1).upper()] + (mo.group(2) or "") + '"', txt)
+    open(p, "w", encoding="utf-8").write(txt)
 
 # =================================================================== MANIFEST
 m = json.load(open(f"{SRC}/manifest.json", encoding="utf-8"))
