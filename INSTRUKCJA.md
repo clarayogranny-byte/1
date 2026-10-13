@@ -32,13 +32,22 @@ Dodatkowo: nagłówek, stopka, blog, pojedynczy wpis i strona błędu 404.
   ciemne tła `#0F3A6E`, jasne tła `#E3EBF5` / `#F2F6FA`. Kolory są zapisane jako **kolory globalne** – można je zmienić w jednym miejscu
   (Elementor → Ustawienia witryny → Kolory globalne). Czcionki Mulish / Inter obsługują polskie znaki.
 * **Logo**: w nagłówku i stopce jest widżet **„Logo witryny”** (Elementor Pro). Pobiera on logo ustawione w WordPressie, więc wystarczy je raz wgrać (krok 2.2).
-  Pliki logo są w folderze `logo/` oraz w archiwum ZIP:
+  Pliki logo są w folderze `logo/` w repozytorium:
   * `lubuskiedomy-logo.png` – logo z przezroczystym tłem (do strony),
   * `lubuskiedomy-ikona.png` – sam domek (ikona witryny / favicon),
   * `lubuskiedomy-logo-oryginal.jpg` – oryginał.
 * Kontakt: tel. 690 295 170, gospodarstwo.lemanska@gmail.com.
 
 ## 2. Import do WordPressa
+
+> **Jak pobrać plik z GitHuba:** otwórz plik `lubuskiedomy-elementor-kit-pl.zip` w repozytorium i kliknij **„Download raw file”** (ikona pobierania).
+> **Nie** używaj przycisku „Code → Download ZIP” – wtedy pobierasz całe repozytorium, a plik szablonu jest schowany w środku i importer go nie rozpozna.
+> Na Macu Safari potrafi automatycznie rozpakować pobrany ZIP – wgrywaj **oryginalny plik .zip** (w środku, bezpośrednio, muszą być `manifest.json`
+> oraz foldery `templates` i `screenshots`, bez dodatkowego folderu nadrzędnego).
+> Jeśli WordPress pokazuje błąd o rozmiarze pliku – plik ma ok. 2,5 MB, a limit wysyłania na hostingu bywa ustawiony na 2 MB; poproś hosting o zwiększenie
+> `upload_max_filesize` lub użyj metody B poniżej.
+
+### Metoda A – wtyczka „Template Kit – Import”
 
 Wymagane wtyczki (jak w oryginale): **Elementor**, **Elementor Pro**, **ElementsKit Lite**,
 **Skyboot Custom Icons for Elementor**. Zalecany motyw: **Hello Elementor**.
@@ -61,6 +70,20 @@ Wymagane wtyczki (jak w oryginale): **Elementor**, **Elementor Pro**, **Elements
    * Realizacje
    * O nas
    * Kontakt
+
+### Metoda B (zapasowa) – wbudowany import Elementora
+
+Jeśli wtyczka „Template Kit – Import” nie chce otworzyć pliku, użyj **`lubuskiedomy-elementor-szablony-json.zip`** (same szablony, ok. 160 KB):
+
+1. *Szablony → Zapisane szablony* (Templates → Saved Templates) → **Importuj szablony** → wybierz `lubuskiedomy-elementor-szablony-json.zip` → *Importuj teraz*.
+   Wszystkie strony, nagłówek, stopka, blog i 404 pojawią się na liście szablonów.
+2. Nagłówek i stopkę ustaw w *Szablony → Kreator motywu* (Theme Builder) → otwórz szablon → *Opublikuj* → warunek „Cała witryna”.
+3. Kolory i czcionki globalne: zaimportowany szablon „Style globalne” otwórz w Elementorze – albo ustaw ręcznie w *Ustawienia witryny → Kolory globalne*:
+   Przycisk `#8CAD2A`, Przycisk – hover `#74931C`, Linie `#17539B`, Jasne tło `#E3EBF5`, Bardzo jasne tło `#F2F6FA`, Ciemne tło `#0F3A6E`,
+   Bardzo ciemne tło `#0A1F3A`, Nagłówki `#0F2440`, Tekst `#3A4350`; czcionki: nagłówki **Mulish**, tekst **Inter**.
+4. Dalej postępuj jak w krokach 2 i 4–8 metody A.
+
+Jeśli nadal pojawia się błąd – skopiuj dokładny komunikat (albo zrób zrzut ekranu), żebyśmy mogli go poprawić.
 
 ## 3. Automatyczne wysyłanie oferty – konieczna konfiguracja
 

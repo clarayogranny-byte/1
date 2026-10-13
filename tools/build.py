@@ -174,7 +174,7 @@ def counters(doc, ids_vals):
 def save(doc, name):
     translate(doc["content"], T)
     with open(f"{OUT}/templates/{name}.json", "w", encoding="utf-8") as f:
-        json.dump(doc, f, ensure_ascii=False, indent=4)
+        json.dump(doc, f, ensure_ascii=True, indent=4)
 
 
 # common section texts used on several pages
@@ -557,7 +557,7 @@ TYP = {"Primary": "Główna", "Secondary": "Drugorzędna", "Text": "Tekst", "Acc
 for t in ps.get("system_typography", []) + ps.get("custom_typography", []):
     t["title"] = TYP.get(t["title"], t["title"])
 with open(f"{OUT}/templates/global.json", "w", encoding="utf-8") as f:
-    json.dump(d, f, ensure_ascii=False, indent=4)
+    json.dump(d, f, ensure_ascii=True, indent=4)
 
 # =================================================================== RECOLOR
 # Colours hard-coded in the demo widgets (not linked to globals) -> logo palette. Alpha suffix is kept.
@@ -578,11 +578,11 @@ PLAN = [  # (name, new source, old source, screenshot from)
     ("Strona Główna", "strona-glowna", "home"),
     ("Oferta", "oferta", "services"),
     ("Projekty", "projekty", "listing"),
-    ("Oferta › Działki pod budowę", "dzialki-pod-budowe", "listing"),
-    ("Oferta › Gotowe domy z działką", "gotowe-domy-z-dzialka", "listing"),
+    ("Oferta - Działki pod budowę", "dzialki-pod-budowe", "listing"),
+    ("Oferta - Gotowe domy z działką", "gotowe-domy-z-dzialka", "listing"),
     ("Technologia Budowy", "technologia-budowy", "careers"),
-    ("Technologia Budowy › Drewniana", "technologia-drewniana", "single-property"),
-    ("Technologia Budowy › Ytong", "technologia-ytong", "single-property"),
+    ("Technologia Budowy - Drewniana", "technologia-drewniana", "single-property"),
+    ("Technologia Budowy - Ytong", "technologia-ytong", "single-property"),
     ("Realizacje", "realizacje", "agent"),
     ("O nas", "o-nas", "about-us"),
     ("Kontakt", "kontakt", "contact-us"),
@@ -599,19 +599,13 @@ for name, new, src in PLAN:
     t["name"] = name
     t["source"] = f"templates/{new}.json"
     t["metadata"].pop("additional_template_information", None)
-    if src == "home":
-        t["type"] = "page"
-        t["metadata"]["template_type"] = "single-page"
     new_templates.append(t)
     SS_MAP.setdefault(f"templates/{src}.json", []).append((t["source"], name))
     # keep the template title inside the json consistent with the manifest
     p = f"{OUT}/templates/{new}.json"
     jd = json.load(open(p, encoding="utf-8"))
     jd["title"] = name
-    if src == "home":
-        jd["type"] = "page"
-        jd["metadata"]["template_type"] = "single-page"
-    json.dump(jd, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=4)
+    json.dump(jd, open(p, "w", encoding="utf-8"), ensure_ascii=True, indent=4)
 m["templates"] = new_templates
 m["title"] = "LubuskieDomy.pl – szablon Elementor (PL)"
 for im in m["images"]:
@@ -620,6 +614,21 @@ for im in m["images"]:
         refs += [{"source": s, "name": n} for s, n in SS_MAP.get(r["source"], [])]
     im["templates"] = refs
 m["images"] = [im for im in m["images"] if im["templates"] and im["filename"] != "Logo-9.png"]  # demo logo replaced by Site Logo
-json.dump(m, open(f"{OUT}/manifest.json", "w", encoding="utf-8"), ensure_ascii=False, indent=4)
+json.dump(m, open(f"{OUT}/manifest.json", "w", encoding="utf-8"), ensure_ascii=True, indent=4)
 shutil.copytree(f"{SRC}/screenshots", f"{OUT}/screenshots", dirs_exist_ok=True)
+
+# =================================================================== ZIPS
+# 1) Envato "Template Kit – Import": same layout as the original kit (manifest.json at the root, no extra files, no dir entries).
+# 2) Fallback for Elementor's own importer (Templates > Saved Templates > Import Templates): only the template .json files.
+import zipfile
+KIT_ZIP, EL_ZIP = sys.argv[3], sys.argv[4]
+with zipfile.ZipFile(KIT_ZIP, "w", zipfile.ZIP_DEFLATED) as z:
+    for t in m["templates"]:
+        z.write(f"{OUT}/{t['source']}", t["source"])
+        if t["screenshot"] not in z.namelist():
+            z.write(f"{OUT}/{t['screenshot']}", t["screenshot"])
+    z.write(f"{OUT}/manifest.json", "manifest.json")
+with zipfile.ZipFile(EL_ZIP, "w", zipfile.ZIP_DEFLATED) as z:
+    for t in m["templates"]:
+        z.write(f"{OUT}/{t['source']}", os.path.basename(t["source"]))
 print("ok")
