@@ -619,7 +619,7 @@ for im in m["images"]:
     for r in im["templates"]:
         refs += [{"source": s, "name": n} for s, n in SS_MAP.get(r["source"], [])]
     im["templates"] = refs
-m["images"] = [im for im in m["images"] if im["templates"]]
+m["images"] = [im for im in m["images"] if im["templates"] and im["filename"] != "Logo-9.png"]  # demo logo replaced by Site Logo
 json.dump(m, open(f"{OUT}/manifest.json", "w", encoding="utf-8"), ensure_ascii=False, indent=4)
 shutil.copytree(f"{SRC}/screenshots", f"{OUT}/screenshots", dirs_exist_ok=True)
 print("ok")
